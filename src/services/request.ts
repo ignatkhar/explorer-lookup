@@ -57,6 +57,7 @@ export default async function request (obj: IRequestParameters): Promise<any> {
     request.open(obj.method ?? 'GET', url);
 
     if (obj.body) {
+      request.setRequestHeader('Content-Type', 'application/json');
       request.send(JSON.stringify(obj.body));
     } else {
       request.send();

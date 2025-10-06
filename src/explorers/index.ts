@@ -6,6 +6,7 @@ import {
 import { TRANSACTION_APIS } from '../constants/api.js';
 import { ethereumRPCParsingFunction } from './rpc/ethereum.js';
 import { bitcoinRPCParsingFunction } from './rpc/bitcoin.js';
+import { arbitrumSepoliaRPC, arbitrumOneRPC } from './rpc/arbitrum.js';
 import { type ExplorerAPI, type TExplorerFunctionsArray } from '../models/explorers';
 
 export interface TDefaultExplorersPerBlockchain {
@@ -79,6 +80,7 @@ function rpcFactory (explorerAPIs: ExplorerAPI[]): TExplorerFunctionsArray {
     {
       getTxData: async (transactionId) => await explorerAPI.parsingFunction({
         ...explorerAPI,
+        serviceUrl: typeof explorerAPI.serviceURL === 'string' ? explorerAPI.serviceURL : undefined,
         transactionId
       }),
       priority: explorerAPI.priority
@@ -94,12 +96,16 @@ export function getRPCExplorers (customExplorerAPIs?: ExplorerAPI[]): Partial<TE
 
 export function prepareExplorerAPIs (customExplorerAPIs: ExplorerAPI[]): TExplorerAPIs {
   const { bitcoin, ethereum } = getDefaultExplorers(customExplorerAPIs);
+
+  // Add default Arbitrum RPC explorers
+  const defaultArbitrumRPCs = rpcFactory([arbitrumSepoliaRPC, arbitrumOneRPC]);
+
   const { custom: rpcCustomExplorers } = getRPCExplorers(customExplorerAPIs.filter(e => e.apiType === 'rpc'));
   const restCustomExplorers = explorerFactory(customExplorerAPIs.filter(e => e.apiType !== 'rpc'));
 
   return {
     bitcoin,
-    ethereum,
+    ethereum: [...ethereum, ...defaultArbitrumRPCs],
     custom: [
       ...rpcCustomExplorers,
       ...restCustomExplorers

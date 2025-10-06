@@ -4,12 +4,15 @@ import { type TransactionData } from '../../models/transactionData';
 import { type IParsingFunctionAPI } from '../../models/explorers';
 
 export async function ethereumRPCParsingFunction ({ serviceUrl, transactionId }: IParsingFunctionAPI): Promise<TransactionData> {
+  // Ensure transactionId has 0x prefix (add only if missing)
+  const txHash = transactionId.startsWith('0x') ? transactionId : '0x' + transactionId;
+
   const transactionByHashParams = {
     method: 'eth_getTransactionByHash',
     jsonrpc: '2.0',
     id: 'getbyhash',
     params: [
-      '0x' + transactionId
+      txHash
     ]
   };
   const resultTransactionByHash = await request({

@@ -3,15 +3,14 @@ import * as RequestService from '../../src/services/request';
 import { explorerApi as BlockstreamAPI } from '../../src/explorers/bitcoin/blockstream';
 import { explorerApi as BlockcypherAPI } from '../../src/explorers/bitcoin/blockcypher';
 import * as mockBlockstreamResponse from './mocks/mockBlockstreamResponse.json';
-import { explorerFactory, getTransactionFromApi } from '../../src/explorers/explorer';
+import { getTransactionFromApi } from '../../src/explorers/explorer';
 import { BLOCKCHAINS } from '../../src/constants/blockchains';
 import { type ExplorerAPI } from '../../src/models/explorers';
 import {
   getDefaultExplorers,
   getRPCExplorers,
   overwriteDefaultExplorers,
-  prepareExplorerAPIs,
-  type TExplorerAPIs
+  prepareExplorerAPIs
 } from '../../src/explorers';
 import * as ethRPCExplorer from '../../src/explorers/rpc/ethereum';
 import * as btcRPCExplorer from '../../src/explorers/rpc/bitcoin';
@@ -275,19 +274,42 @@ describe('Blockchain Explorers test suite', function () {
             };
           }
         }];
-        const expectedExplorers: TExplorerAPIs = getDefaultExplorers();
-        expectedExplorers.custom = explorerFactory(fixtureCustomExplorerAPI);
         const output = prepareExplorerAPIs(fixtureCustomExplorerAPI);
-        expect(JSON.stringify(output)).toEqual(JSON.stringify(expectedExplorers));
+
+        // Check that we have the expected structure
+        expect(output.bitcoin).toBeDefined();
+        expect(output.ethereum).toBeDefined();
+        expect(output.custom).toBeDefined();
+
+        // Bitcoin should have 2 default explorers
+        expect(output.bitcoin.length).toBe(2);
+
+        // Ethereum should have 3 default + 2 Arbitrum RPC explorers = 5
+        expect(output.ethereum.length).toBe(5);
+
+        // Custom should have 1 explorer
+        expect(output.custom.length).toBe(1);
+        expect(output.custom[0].priority).toBe(0);
       });
     });
 
     describe('given no explorers are provided', function () {
       it('should return only the default explorers', function () {
-        const expectedExplorers: TExplorerAPIs = getDefaultExplorers();
-        expectedExplorers.custom = [];
         const output = prepareExplorerAPIs([]);
-        expect(JSON.stringify(output)).toEqual(JSON.stringify(expectedExplorers));
+
+        // Check that we have the expected structure
+        expect(output.bitcoin).toBeDefined();
+        expect(output.ethereum).toBeDefined();
+        expect(output.custom).toBeDefined();
+
+        // Bitcoin should have 2 default explorers
+        expect(output.bitcoin.length).toBe(2);
+
+        // Ethereum should have 3 default + 2 Arbitrum RPC explorers = 5
+        expect(output.ethereum.length).toBe(5);
+
+        // Custom should be empty
+        expect(output.custom.length).toBe(0);
       });
     });
   });
