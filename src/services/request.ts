@@ -33,14 +33,15 @@ export default async function request (obj: IRequestParameters): Promise<any> {
       if (request.status >= 200 && request.status < 300) {
         resolve(request.responseText);
       } else {
-        console.log(request.responseText);
+        // Errors are handled via promise rejection - no need to log
         const failureMessage: string = `Error fetching url:${url}; status code:${request.status}`;
         reject(new Error(failureMessage));
       }
     };
 
-    request.ontimeout = (e) => {
-      console.log('ontimeout', e);
+    request.ontimeout = () => {
+      // Timeout errors are handled via promise rejection
+      reject(new Error('Request timeout'));
     };
 
     request.onreadystatechange = () => {
@@ -50,8 +51,8 @@ export default async function request (obj: IRequestParameters): Promise<any> {
     };
 
     request.onerror = () => {
-      console.error(`Request failed with error ${request.responseText}`);
-      reject(new Error(request.responseText));
+      // Request errors are handled via promise rejection
+      reject(new Error(request.responseText || 'Request failed'));
     };
 
     request.open(obj.method ?? 'GET', url);
