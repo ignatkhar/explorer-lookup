@@ -5,6 +5,7 @@ import { SupportedChains } from './supported-chains.js';
 enum BlinkCodes {
   btc = 'btc',
   eth = 'eth',
+  arb = 'arb',
   mocknet = 'mocknet'
 }
 
@@ -89,42 +90,55 @@ const BLOCKCHAINS: { [chain in SupportedChains]: IBlockchainObject } = {
   },
   // --- NEW: Arbitrum One (mainnet) ---
   [SupportedChains.ArbitrumOne]: {
-     code: SupportedChains.ArbitrumOne,
-     blinkCode: BlinkCodes.eth,
-     name: 'Arbitrum One',
-     prefixes: ['0x'],
-     test: false,
-     signatureValue: 'arbitrumOne',
-     transactionTemplates: {
-       full: `https://arbiscan.io/tx/${TRANSACTION_ID_PLACEHOLDER}`,
-       raw: `https://arbiscan.io/tx/${TRANSACTION_ID_PLACEHOLDER}`
-     }
-   },
-   // --- NEW: Arbitrum Sepolia (testnet) ---
-   [SupportedChains.ArbitrumSepolia]: {
-     code: SupportedChains.ArbitrumSepolia,
-     blinkCode: BlinkCodes.eth,
-     name: 'Arbitrum Sepolia',
-     prefixes: ['0x'],
-     test: true,
-     signatureValue: 'arbitrumSepolia',
-     transactionTemplates: {
-       full: `https://sepolia.arbiscan.io/tx/${TRANSACTION_ID_PLACEHOLDER}`,
-       raw: `https://sepolia.arbiscan.io/tx/${TRANSACTION_ID_PLACEHOLDER}`
-     }
-   },
-   // --- NEW: bloxberg (Blockscout) ---
-   [SupportedChains.Ethbloxberg]: {
-     code: SupportedChains.Ethbloxberg,
-     blinkCode: BlinkCodes.eth,
-     name: 'bloxberg',
-     prefixes: ['0x'],
-     test: false,
-     signatureValue: 'ethbloxberg',
-     transactionTemplates: {
-       full: `https://blockexplorer.bloxberg.org/tx/${TRANSACTION_ID_PLACEHOLDER}`,
-       raw: `https://blockexplorer.bloxberg.org/api?module=transaction&action=gettxinfo&txhash=${TRANSACTION_ID_PLACEHOLDER}`
-     }
+    code: SupportedChains.ArbitrumOne,
+    blinkCode: BlinkCodes.eth,
+    name: 'Arbitrum One',
+    prefixes: ['0x'],
+    test: false,
+    signatureValue: 'arbitrumOne',
+    transactionTemplates: {
+      full: `https://arbiscan.io/tx/${TRANSACTION_ID_PLACEHOLDER}`,
+      raw: `https://arbiscan.io/tx/${TRANSACTION_ID_PLACEHOLDER}`
+    }
+  },
+  // --- NEW: Arbitrum Sepolia (testnet) ---
+  [SupportedChains.ArbitrumSepolia]: {
+    code: SupportedChains.ArbitrumSepolia,
+    blinkCode: BlinkCodes.eth,
+    name: 'Arbitrum Sepolia',
+    prefixes: ['0x'],
+    test: true,
+    signatureValue: 'arbitrumSepolia',
+    transactionTemplates: {
+      full: `https://sepolia.arbiscan.io/tx/${TRANSACTION_ID_PLACEHOLDER}`,
+      raw: `https://sepolia.arbiscan.io/tx/${TRANSACTION_ID_PLACEHOLDER}`
+    }
+  },
+  // --- NEW: l2.bloxberg / Arbitrum bloxberg ---
+  [SupportedChains.ArbBloxberg]: {
+    code: SupportedChains.ArbBloxberg,
+    blinkCode: BlinkCodes.arb,
+    name: 'l2.bloxberg',
+    prefixes: ['0x'],
+    test: true,
+    signatureValue: 'arbbloxberg',
+    transactionTemplates: {
+      full: `https://explorer.l2.bloxberg.org/tx/${TRANSACTION_ID_PLACEHOLDER}`,
+      raw: `https://explorer.l2.bloxberg.org/api?module=transaction&action=gettxinfo&txhash=${TRANSACTION_ID_PLACEHOLDER}`
+    }
+  },
+  // --- NEW: bloxberg (Blockscout) ---
+  [SupportedChains.Ethbloxberg]: {
+    code: SupportedChains.Ethbloxberg,
+    blinkCode: BlinkCodes.eth,
+    name: 'bloxberg',
+    prefixes: ['0x'],
+    test: false,
+    signatureValue: 'ethbloxberg',
+    transactionTemplates: {
+      full: `https://blockexplorer.bloxberg.org/tx/${TRANSACTION_ID_PLACEHOLDER}`,
+      raw: `https://blockexplorer.bloxberg.org/api?module=transaction&action=gettxinfo&txhash=${TRANSACTION_ID_PLACEHOLDER}`
+    }
   },
   [SupportedChains.Mocknet]: {
     code: SupportedChains.Mocknet,
@@ -161,7 +175,7 @@ const BLOCKCHAINS: { [chain in SupportedChains]: IBlockchainObject } = {
 };
 
 // TODO: use test boolean from entry?
-function isTestChain (chain: SupportedChains): boolean {
+function isTestChain(chain: SupportedChains): boolean {
   return chain !== BLOCKCHAINS.bitcoin.code && chain !== BLOCKCHAINS.ethmain.code;
 }
 
